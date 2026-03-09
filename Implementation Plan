@@ -1,0 +1,70 @@
+# Implementation Plan: LifeOS (GTD + Biometrics)
+
+## Goal Description
+
+Develop a Progressive Web Application (PWA) that integrates advanced GTD task management with biometric data (Oura, Scales) and Google Calendar, orchestrated by an intelligent AI Assistant. Key requirements include robust security (Encryption at Rest, Passkeys) and a "Premium" aesthetic.
+
+## User Review Required
+
+> [!IMPORTANT]
+> **Tech Stack Selection**: I am proposing **NestJS** for the backend architecture and **React (Vite)** for the frontend, deployed as a PWA.
+> **Database**: **PostgreSQL** with Row-Level Security and application-side encryption for sensitive fields.
+> **Auth**: **Passkey-first** authentication using SimpleWebAuthn.
+
+## Proposed Changes
+
+### 1. Project Initialization & Architecture
+
+#### [NEW] [monorepo/structure]
+
+- Initialize **NestJS** backend project (TypeScript, API framework).
+- Initialize **React (Vite)** frontend project (TypeScript, Tailwind CSS).
+- Configure **PWA** capabilities (`vite-plugin-pwa`).
+- Set up **PostgreSQL** (local Docker container for development).
+- Initialize **Prisma** ORM for type-safe database access.
+
+### 2. Core Security & Authentication
+
+#### [NEW] [lib/auth]
+
+- Implement **WebAuthn** registration and login flows.
+- Create `EncryptionService` handling AES-256-GCM encryption/decryption for sensitive data fields (Task titles, Biometric values) before they touch the DB.
+
+### 3. Feature Implementation Phases
+
+#### Phase 1: Foundation & GTD
+
+- **Database Schema**: Users, Tasks, Projects, Contexts.
+- **UI Components**: Build "Premium" design system (Tailwind + Framer Motion for animations).
+- **Features**: Inbox capture, Project organization, Task lists with filtering.
+
+#### Phase 2: Integrations (Calendar & Biometrics)
+
+- **Google Calendar**: OAuth flow + Bi-directional sync logic.
+- **Biometric Ingestion**:
+  - Oura API Client (Cloud).
+  - Smart Scale API Client (Cloud).
+  - Automated hourly sync jobs.
+  - Manual Entry UI for non-automated metrics.
+
+#### Phase 3: AI Assistant & Workflows
+
+- **Agent Architecture**:
+  - `GreetingAgent`: Summarizes status on login.
+  - `TriageAgent`: Parses natural language inputs into structured tasks.
+  - `ScheduleAgent`: Suggests task blocks based on readiness/calendar.
+- **LLM Integration**: Connect to Gemini/OpenAI with Function Calling.
+
+## Verification Plan
+
+### Automated Tests
+
+- **Unit Tests**: Jest/Vitest for encryption logic and utility functions.
+- **Integration Tests**: Test API endpoints (Calendar sync, Task CRUD) with mocked database.
+- **E2E Tests**: Playwright tests for critical flows (Login -> specific Task Creation -> Dashboard view).
+
+### Manual Verification
+
+- **PWA Install**: Verify installability on iOS/Android via Simulator/Device.
+- **Biometric Sync**: Verify data flows from Oura Sandbox/Mock API.
+- **Encryption**: Verify raw database entries are unreadable (encrypted) while UI shows cleartext.

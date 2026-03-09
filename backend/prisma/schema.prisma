@@ -1,0 +1,77 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id                 String         @id @default(uuid())
+  email              String         @unique // Application encrypted strings can be stored here, maybe without @unique if randomized, but assuming deterministic or hashed for lookup
+  passwordHash       String
+  settings           Json?
+  passkeyCredentials Json?
+  tasks              Task[]
+  biometricLogs      BiometricLog[]
+  projects           Project[]
+  contexts           Context[]
+  createdAt          DateTime       @default(now())
+  updatedAt          DateTime       @updatedAt
+}
+
+model Task {
+  id                String    @id @default(uuid())
+  userId            String
+  user              User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  title             String    // Encrypted
+  description       String?   // Encrypted
+  status            String    // Enum: Inbox, Next Action, Waiting For, Someday/Maybe, Done
+  contextId         String?
+  context           Context?  @relation(fields: [contextId], references: [id])
+  projectId         String?
+  project           Project?  @relation(fields: [projectId], references: [id])
+  dueDate           String?   // Encrypted Timestamp
+  energyLevel       String?   // Enum: Low, Medium, High
+  estimatedDuration Int?      // in minutes
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+}
+
+model BiometricLog {
+  id         String   @id @default(uuid())
+  userId     String
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  source     String   // Encrypted (Oura, Scale)
+  metricType String   // Encrypted (SleepScore, Readiness, etc.)
+  value      String   // Encrypted (Float/JSON as string)
+  timestamp  DateTime
+}
+
+model Project {
+  id          String   @id @default(uuid())
+  name        String   // Encrypted
+  description String?  // Encrypted
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  tasks       Task[]
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Context {
+  id          String   @id @default(uuid())
+  name        String   // Encrypted
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  tasks       Task[]
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
