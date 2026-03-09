@@ -1,0 +1,7 @@
+/backend/node_modules
+/backend/dist
+/backend/artifacts
+/backend/coverage
+/backend/*.tsbuildinfo
+/backend/.env
+/backend/.env.*
