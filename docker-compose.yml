@@ -1,0 +1,17 @@
+name: major-domo-antigravity
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: lifeos-db
+    environment:
+      POSTGRES_USER: lifeos
+      POSTGRES_PASSWORD: lifeos_password
+      POSTGRES_DB: lifeos_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - lifeos_pgdata:/var/lib/postgresql/data
+    restart: unless-stopped
+
+volumes:
+  lifeos_pgdata:
