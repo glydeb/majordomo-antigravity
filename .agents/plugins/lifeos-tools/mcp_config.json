@@ -1,0 +1,12 @@
+{
+  "mcpServers": {
+    "lifeos-postgres": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@modelcontextprotocol/server-postgres",
+        "postgresql://lifeos:lifeos_password@localhost:5432/lifeos_db"
+      ]
+    }
+  }
+}
